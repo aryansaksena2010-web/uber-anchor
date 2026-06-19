@@ -36,6 +36,7 @@ def rotate_pool(new_m4a):
         if os.path.exists(src):
             shutil.move(src, dst)
     shutil.copyfile(new_m4a, os.path.join(POOL, "1.m4a"))
+  [shutil.copyfile(new_m4a, os.path.join(POOL, f"{n}.m4a")) for n in range(2, POOL_SIZE + 1) if not os.path.exists(os.path.join(POOL, f"{n}.m4a"))]
 
 
 def main():
