@@ -1,0 +1,120 @@
+# ===========================================================================
+#  Uber Anchor — configuration
+#  Edit anything here; you don't need to touch the Python files.
+# ===========================================================================
+
+# Which local Ollama model to use. Good free choices:
+#   llama3.2        (fast, light, great for a laptop)
+#   llama3.1:8b     (a bit smarter, needs more RAM)
+#   qwen2.5:7b      (very good writing)
+ollama:
+  model: "llama3.2"
+  url: "http://localhost:11434"
+
+# Roughly how long the spoken lesson should be.
+# ~150 spoken words per minute, so 20 min ≈ 3000 words.
+lesson:
+  target_minutes: 20
+  words_per_minute: 150
+
+# Text-to-speech: Kokoro — currently the best-sounding FREE local TTS
+# (#1 on the TTS Arena leaderboard, ~ElevenLabs quality, runs on a CPU laptop).
+# It is NOT robotic AI slop. Installed via pip (see README), no files to download.
+#
+# Voice presets (am = American male, bm = British male):
+#   am_michael  <- recommended: warm, clear, confident anchor
+#   am_onyx     <- deeper, more gravelly "primetime" authority
+#   am_adam     <- neutral newsreader
+#   bm_george   <- British anchor flavour
+tts:
+  engine: "kokoro"
+  voice: "am_michael"
+  lang_code: "a"     # 'a' = American English, 'b' = British English
+  # Anchors speak briskly. 1.0 = normal, 1.1 = a touch faster/punchier.
+  speed: 1.05
+  sample_rate: 24000
+
+# Publishing: where the finished audio goes so the iPhone can play it.
+# The Mac drops a phone-friendly .m4a into an iCloud Drive folder; the iPhone
+# sees it automatically, and a Siri Shortcut plays it. (See IPHONE_SETUP.md.)
+publish:
+  enabled: true
+  # Folder name created inside iCloud Drive.
+  icloud_folder: "UberAnchor"
+  # A fixed-name copy of TODAY's lesson (simple-shortcut fallback).
+  filename: "today.m4a"
+  # AAC bitrate for the m4a (64k ≈ ~9MB for 20 min; great for speech).
+  aac_bitrate: 64000
+  # Keep this many days of lessons ready in advance, each saved by date
+  # (e.g. 2026-06-19.m4a). The iPhone Shortcut plays today's date, so the Mac
+  # can stay closed for up to this many days and he still gets a fresh story
+  # daily. Whenever the Mac is open, it tops the queue back up to this number.
+  buffer_days: 15
+
+# Offline speech recognition for an OPTIONAL computer-only wake word (Vosk).
+# NOT used in the iPhone setup — Siri handles the wake word there.
+speech:
+  vosk_model: "models/vosk-model-small-en-us-0.15"
+  # If ANY of these phrases are heard, today's lesson plays. Keep them short.
+  wake_phrases:
+    - "read to me"
+    - "i'm in my uber"
+    - "im in my uber"
+    - "in my uber"
+    - "start my lesson"
+
+# The "Wolf Blitzer / CNN anchor" persona used to write the script.
+# This shapes STYLE only — not anyone's actual voice.
+persona: >
+  You are a seasoned American cable-news anchor in the mold of a primetime
+  breaking-news host. Authoritative, brisk, and clear. You open with phrases
+  like "Happening now," "We're following major developments," and "Let's get
+  right to it." You hand off between segments like a broadcast ("More on that
+  in a moment," "But first..."). You explain complex things plainly for a
+  smart, curious 60-year-old listener who is relaxing in the back of a car.
+  Warm but commanding. No corny jokes. Never mention that you are an AI.
+
+# One topic per weekday (0 = Monday ... 6 = Sunday).
+# Add as many RSS feeds as you like per topic; the generator pulls recent
+# headlines from them so the lesson feels current. If feeds fail or are
+# empty, it falls back to an evergreen "something fascinating" lesson.
+topics:
+  0:
+    name: "Quantum Physics"
+    brief: "a peculiar, mind-bending idea or recent finding in quantum physics, explained simply"
+    feeds:
+      - "https://www.sciencedaily.com/rss/matter_energy/quantum_physics.xml"
+      - "https://phys.org/rss-feed/physics-news/quantum-physics/"
+  1:
+    name: "Cricket"
+    brief: "an interesting story, match, record, or piece of cricket history or current news"
+    feeds:
+      - "https://www.espncricinfo.com/rss/content/story/feeds/0.xml"
+  2:
+    name: "Booker Prize Books"
+    brief: "a Booker Prize winning or shortlisted novel — its story, author, and why it matters"
+    feeds:
+      - "https://www.theguardian.com/books/booksblog/rss"
+      - "https://www.theguardian.com/books/rss"
+  3:
+    name: "Interesting Dishes to Cook at Home"
+    brief: "a fascinating dish to cook at home — its origin, flavours, and a simple way to make it"
+    feeds:
+      - "https://www.seriouseats.com/rss"
+      - "https://www.bbcgoodfood.com/recipes/feed"
+  4:
+    name: "New Health Technology"
+    brief: "a recent or emerging health technology and what it could mean for everyday people"
+    feeds:
+      - "https://www.sciencedaily.com/rss/health_medicine/medical_technology.xml"
+      - "https://www.statnews.com/category/health-tech/feed/"
+  5:
+    name: "Bollywood"
+    brief: "a Bollywood story — a classic film, an icon, or current industry news"
+    feeds:
+      - "https://www.bollywoodhungama.com/rss/news.xml"
+      - "https://timesofindia.indiatimes.com/rssfeeds/1081479906.cms"
+  6:
+    name: "Workouts for 60-Year-Olds (Strength & Cardio)"
+    brief: "a safe, effective strength or cardio workout idea tailored to a healthy 60-year-old"
+    feeds: []   # evergreen — generated fresh each week without needing news

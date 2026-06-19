@@ -1,0 +1,58 @@
+name: Daily Uber Anchor Lesson
+
+# Runs every day at 06:00 UTC, and can be run on-demand from the Actions tab.
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+
+# Let the job commit the generated audio back into the repo.
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install system audio tools
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('cloud/requirements.txt') }}
+
+      - name: Install Python deps
+        run: pip install -r cloud/requirements.txt
+
+      - name: Install & start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve &
+          sleep 8
+          ollama pull "${OLLAMA_MODEL}"
+        env:
+          OLLAMA_MODEL: llama3.2:1b
+
+      - name: Generate today's lesson + skip pool
+        run: python generate_cloud.py
+        env:
+          OLLAMA_MODEL: llama3.2:1b
+
+      - name: Commit the audio
+        run: |
+          git config user.name "uber-anchor-bot"
+          git config user.email "uber-anchor-bot@users.noreply.github.com"
+          git add public
+          git commit -m "Daily lesson $(date -u +%F)" || echo "Nothing to commit"
+          git push

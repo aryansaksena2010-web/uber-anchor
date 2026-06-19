@@ -1,0 +1,13 @@
+# Uber Anchor — Python dependencies
+PyYAML>=6.0          # read config.yaml
+requests>=2.31       # talk to Ollama
+feedparser>=6.0      # pull fresh news headlines (RSS)
+
+# Text-to-speech (the good, non-robotic voice)
+kokoro>=0.9.4
+soundfile>=0.12
+numpy>=1.24
+
+# Offline wake-word listening
+vosk>=0.3.42
+sounddevice>=0.4.6
