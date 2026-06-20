@@ -76,3 +76,11 @@ WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-
 [publish] iPhone copy ready in iCloud: /Users/aryansaksena/Library/Mobile Documents/com~apple~CloudDocs/UberAnchor/today.m4a
 [buffer] done. made 13 new, 2 already ready.
 [buffer] target: 15 days ready (from 2026-06-19)
+[buffer] target: 15 days ready (from 2026-06-20)
+[make] 2026-07-04 (Sat) -> Bollywood
+[ollama] generating with llama3.2 ...
+[kokoro] narrating with voice 'am_michael' -> /Users/aryansaksena/Desktop/uber-anchor/lessons/2026-07-04.wav
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+[publish] 2026-07-04 -> /Users/aryansaksena/Library/Mobile Documents/com~apple~CloudDocs/UberAnchor/2026-07-04.m4a
+[publish] iPhone copy ready in iCloud: /Users/aryansaksena/Library/Mobile Documents/com~apple~CloudDocs/UberAnchor/today.m4a
+[buffer] done. made 1 new, 14 already ready.

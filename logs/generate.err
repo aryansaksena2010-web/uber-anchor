@@ -67,3 +67,8 @@ Traceback (most recent call last):
   File "/opt/homebrew/Cellar/python@3.12/3.12.13_2/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 571, in run
     raise CalledProcessError(retcode, process.args,
 subprocess.CalledProcessError: Command '['afconvert', '/Users/aryansaksena/Desktop/uber-anchor/lessons/2026-06-19.wav', '/Users/aryansaksena/Library/Mobile Documents/com~apple~CloudDocs/UberAnchor/today.m4a', '-f', 'm4af', '-d', 'aac', '-b', '64000']' returned non-zero exit status 1.
+/Users/aryansaksena/Desktop/uber-anchor/.venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py:1009: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.2 and num_layers=1
+  super().__init__("LSTM", *args, **kwargs)
+/Users/aryansaksena/Desktop/uber-anchor/.venv/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.

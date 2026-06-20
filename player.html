@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Uber Anchor</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: #0b1020;
+    color: #fff;
+    font-family: -apple-system, system-ui, sans-serif;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 24px; box-sizing: border-box;
+  }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 6px; }
+  p  { color: #9fb0d0; margin: 0 0 28px; font-size: 15px; }
+  #play {
+    width: 78%; max-width: 360px; padding: 26px 0;
+    font-size: 26px; font-weight: 700; color: #0b1020;
+    background: #57d3a4; border: none; border-radius: 22px;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  #play:active { transform: scale(0.98); }
+  audio { width: 90%; max-width: 420px; margin-top: 30px; }
+  .hidden { display: none; }
+  .status { margin-top: 18px; color: #9fb0d0; font-size: 14px; min-height: 18px; }
+</style>
+</head>
+<body>
+  <h1 id="title">Today's Lesson</h1>
+  <p id="sub">Tap to start — then lock your phone if you like.</p>
+  <button id="play">▶  Play</button>
+  <audio id="audio" controls preload="auto" class="hidden"></audio>
+  <div class="status" id="status"></div>
+
+<script>
+  var BASE = "https://aryansaksena2010-web.github.io/uber-anchor/public/";
+  var params = new URLSearchParams(location.search);
+  var mode = params.get("mode") || "today";
+
+  var url, title;
+  if (mode === "skip") {
+    var n = Math.floor(Math.random() * 15) + 1;
+    url = BASE + "pool/" + n + ".m4a";
+    title = "A Different Story";
+  } else {
+    url = BASE + "today.m4a";
+    title = "Today's Lesson";
+  }
+
+  var audio = document.getElementById("audio");
+  var play = document.getElementById("play");
+  var status = document.getElementById("status");
+  document.getElementById("title").textContent = title;
+  audio.src = url;
+
+  function start() {
+    audio.classList.remove("hidden");
+    play.classList.add("hidden");
+    status.textContent = "Playing… say “Hey Siri, stop” to pause.";
+    audio.play();
+  }
+  play.addEventListener("click", start);
+  // Try to auto-start; iOS will usually require the tap, which is fine.
+  audio.play().then(function () {
+    play.classList.add("hidden");
+    audio.classList.remove("hidden");
+    status.textContent = "Playing… say “Hey Siri, stop” to pause.";
+  }).catch(function () {});
+</script>
+</body>
+</html>
