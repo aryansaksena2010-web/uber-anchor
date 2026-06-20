@@ -27,25 +27,26 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PUBLIC = os.path.join(HERE, "public")
 POOL = os.path.join(PUBLIC, "pool")
 POOL_SIZE = 15
+EXT = "mp3"  # mp3 streams + autoplays inline in iOS Safari (m4a downloads)
 
 
-def rotate_pool(new_m4a):
+def rotate_pool(new_audio):
     """Shift 1->2 ... 14->15 (drop old 15), then put the new story at slot 1."""
     os.makedirs(POOL, exist_ok=True)
-    oldest = os.path.join(POOL, f"{POOL_SIZE}.m4a")
+    oldest = os.path.join(POOL, f"{POOL_SIZE}.{EXT}")
     if os.path.exists(oldest):
         os.remove(oldest)
     for n in range(POOL_SIZE, 1, -1):
-        src = os.path.join(POOL, f"{n - 1}.m4a")
-        dst = os.path.join(POOL, f"{n}.m4a")
+        src = os.path.join(POOL, f"{n - 1}.{EXT}")
+        dst = os.path.join(POOL, f"{n}.{EXT}")
         if os.path.exists(src):
             shutil.move(src, dst)
-    newest = os.path.join(POOL, "1.m4a")
-    shutil.copyfile(new_m4a, newest)
+    newest = os.path.join(POOL, f"1.{EXT}")
+    shutil.copyfile(new_audio, newest)
     # Fill any still-empty slots so the phone's random Skip (1..15) never hits
     # a missing file while the pool is still building.
     for n in range(2, POOL_SIZE + 1):
-        slot = os.path.join(POOL, f"{n}.m4a")
+        slot = os.path.join(POOL, f"{n}.{EXT}")
         if not os.path.exists(slot):
             shutil.copyfile(newest, slot)
 
@@ -59,26 +60,26 @@ def make_story(cfg, topic_index):
     script = gl.call_ollama(cfg, prompt)
     wav = os.path.join(common.LESSONS_DIR, f"gen_{topic_index}.wav")
     gl.synth_with_kokoro(cfg, script, wav)
-    m4a = os.path.join(common.LESSONS_DIR, f"gen_{topic_index}.m4a")
-    common.convert_to_m4a(wav, m4a, cfg.get("publish", {}).get("aac_bitrate", 64000))
+    audio = os.path.join(common.LESSONS_DIR, f"gen_{topic_index}.{EXT}")
+    common.convert_to_mp3(wav, audio, cfg.get("publish", {}).get("aac_bitrate", 64000))
     try:
         os.remove(wav)
     except OSError:
         pass
-    return m4a
+    return audio
 
 
 def seed_all(cfg):
     """Generate one story per topic so Skip has real variety immediately."""
     today_idx = dt.date.today().weekday()
-    today_path = os.path.join(PUBLIC, "today.m4a")
+    today_path = os.path.join(PUBLIC, f"today.{EXT}")
     for idx in range(len(cfg["topics"])):
-        m4a = make_story(cfg, idx)
-        rotate_pool(m4a)
+        audio = make_story(cfg, idx)
+        rotate_pool(audio)
         if idx == today_idx:
-            shutil.copyfile(m4a, today_path)
+            shutil.copyfile(audio, today_path)
         try:
-            os.remove(m4a)
+            os.remove(audio)
         except OSError:
             pass
     print("[seed] done — pool seeded with all topics.")
@@ -99,22 +100,22 @@ def main():
         return
 
     today = dt.date.today()
-    today_m4a = make_story_for_today(cfg, today)
-    rotate_pool(today_m4a)
-    print("[cloud] rotated skip pool (newest -> pool/1.m4a)")
+    today_audio = make_story_for_today(cfg, today)
+    rotate_pool(today_audio)
+    print(f"[cloud] rotated skip pool (newest -> pool/1.{EXT})")
 
 
 def make_story_for_today(cfg, today):
-    """Normal daily path: make today's story, write public/today.m4a."""
-    m4a_src = make_story(cfg, today.weekday())
-    today_m4a = os.path.join(PUBLIC, "today.m4a")
-    shutil.copyfile(m4a_src, today_m4a)
+    """Normal daily path: make today's story, write public/today.mp3."""
+    src = make_story(cfg, today.weekday())
+    today_audio = os.path.join(PUBLIC, f"today.{EXT}")
+    shutil.copyfile(src, today_audio)
     try:
-        os.remove(m4a_src)
+        os.remove(src)
     except OSError:
         pass
-    print(f"[cloud] wrote {today_m4a}")
-    return today_m4a
+    print(f"[cloud] wrote {today_audio}")
+    return today_audio
 
 
 if __name__ == "__main__":

@@ -101,6 +101,25 @@ def convert_to_m4a(wav_path, out_path, bitrate=64000):
     return out_path
 
 
+def convert_to_mp3(wav_path, out_path, bitrate=64000):
+    """Encode to MP3. GitHub Pages serves .mp3 as streamable audio, so iOS
+    Safari autoplays it inline with native controls (stop / volume / no overlap)."""
+    if shutil.which("ffmpeg"):
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", wav_path, "-codec:a", "libmp3lame",
+             "-b:a", str(bitrate), out_path],
+            check=True,
+        )
+    elif shutil.which("afconvert"):  # macOS fallback
+        subprocess.run(
+            ["afconvert", wav_path, out_path, "-f", "mp4f", "-d", "mp3"],
+            check=True,
+        )
+    else:
+        raise RuntimeError("Need 'ffmpeg' (or afconvert) to make mp3.")
+    return out_path
+
+
 def dated_m4a_path(cfg, date):
     """iCloud path for a specific day's lesson, e.g. .../2026-06-19.m4a"""
     return os.path.join(icloud_dir(cfg), f"{date.isoformat()}.m4a")
