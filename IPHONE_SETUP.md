@@ -1,53 +1,75 @@
-# 📱 iPhone setup — cloud version (no Mac, with Skip)
+# 📱 iPhone setup — cloud version (no Mac, with Skip + voice-stop)
 
-Two simple Siri shortcuts. Do this once on the iPhone. After this, your uncle
-just talks — no app, no buttons, no Mac, no always-on mic (Siri listens).
+Two Siri shortcuts. Build them once on YOUR phone, test, then AirDrop to your
+uncle. After this it's fully hands-free, no Mac, no maintenance.
 
-You need your audio URLs from the cloud setup first (see CLOUD_SETUP.md). They
-look like, with `<YOU>` = your GitHub username:
+Your live URLs (already working):
+- **Today:** `https://raw.githubusercontent.com/aryansaksena2010-web/uber-anchor/main/public/today.m4a`
+- **Pool base:** `https://raw.githubusercontent.com/aryansaksena2010-web/uber-anchor/main/public/pool/`
+  (files are `1.m4a` … `15.m4a`)
 
-- **Today:** `https://raw.githubusercontent.com/<YOU>/uber-anchor/main/public/today.m4a`
-- **Pool:** `https://raw.githubusercontent.com/<YOU>/uber-anchor/main/public/pool/`
-
----
-
-## Shortcut 1 — "Read to me" (plays today's story)
-
-Open **Shortcuts** → **+** → add these actions:
-
-1. Search **Get Contents of URL**, add it. In its URL box paste your **Today**
-   URL exactly.
-2. Search **Play Sound**, add it (it uses the downloaded audio from step 1).
-3. Tap the name at top → rename to **Read to me** → Done.
-
-Test: say **"Hey Siri, read to me."**
+> We use the **Open URLs** action (not "Play Sound") on purpose: it plays in the
+> native iOS player, so **"Hey Siri, stop"** / "pause" / "skip" work by voice,
+> and audio keeps playing with the screen off.
 
 ---
 
-## Shortcut 2 — "Skip" (plays a different, random story)
+## Shortcut 1 — "Read to me" (today's story)
 
-Open **Shortcuts** → **+** → add:
+Shortcuts app → **+** → add these in order (use the search bar each time):
 
-1. Search **Random Number**, add it. Set **Minimum 1**, **Maximum 15**.
-2. Search **Text**, add it. In the box, paste your **Pool** URL, then tap the
-   variable bar and insert **Random Number**, then type `.m4a`.
-   - It should read: `…/public/pool/`**[Random Number]**`.m4a`
-3. Search **Get Contents of URL**, add it. Tap its URL field and insert the
-   **Text** variable from step 2.
-4. Search **Play Sound**, add it.
-5. Rename to **Skip** (or "Another one" / "Skip this one") → Done.
+1. **URL** — add it, paste:
+   `https://raw.githubusercontent.com/aryansaksena2010-web/uber-anchor/main/public/today.m4a`
+2. **Open URLs** — add it (it auto-uses the URL above).
+3. Tap the name at top → rename **Read to me** → Done.
 
-Now: *"Hey Siri, read to me"* plays today's; *"Hey Siri, skip"* gives a random
-recent one. Both work with the Mac off — the cloud keeps them fresh.
+Test: **"Hey Siri, read to me."**
+
+---
+
+## Shortcut 2 — "Skip" (a different, random story)
+
+Shortcuts app → **+** → add:
+
+1. **Random Number** — Minimum **1**, Maximum **15**.
+2. **Text** — type the pool base, then insert the Random Number variable, then `.m4a`:
+   `https://raw.githubusercontent.com/aryansaksena2010-web/uber-anchor/main/public/pool/`**[Random Number]**`.m4a`
+3. **Open URLs** — add it; tap its field and insert the **Text** variable from step 2.
+4. Rename **Skip** → Done.
+
+Test: **"Hey Siri, skip."** (The cloud keeps all 15 pool files filled, so this
+never errors.)
+
+---
+
+## Make Siri fully hands-free
+
+On the phone (yours, and later your uncle's): **Settings → Apple Intelligence
+& Siri**
+- Turn ON **"Listen for 'Hey Siri'"** (or "Hey Siri").
+- Turn ON **"Allow Siri When Locked."**
+
+Now he doesn't unlock or tap anything — just speaks. To stop: **"Hey Siri,
+stop."**
+
+---
+
+## Put it on your uncle's phone (AirDrop)
+
+1. In Shortcuts, long-press the **Read to me** shortcut → **Share** → **AirDrop**
+   → choose his iPhone. He taps **Add Shortcut**.
+2. Repeat for **Skip**.
+3. On his phone, do the "Make Siri fully hands-free" settings above.
+
+Because both shortcuts point at the **same public URLs**, they work on his phone
+with zero extra setup — the cloud feeds both phones.
 
 ---
 
 ## Tips
 
-- **First run** asks permission to access the URL — allow it.
-- **Multiple wake phrases:** duplicate a shortcut and rename the copy (e.g.
-  "I'm in my Uber") — each name becomes its own "Hey Siri, ___" trigger.
-- **Keeps playing when the phone locks** — yes, like a podcast.
-- **Pin to Home/Lock Screen** for a one-tap backup if Siri mishears.
-- **"Could not load"** → the daily job hasn't run yet, or you're offline. Run
-  the workflow once from the GitHub Actions tab (see CLOUD_SETUP.md).
+- **First run** asks permission to open the URL / use the data — allow it.
+- **More wake phrases:** duplicate a shortcut, rename the copy (e.g. "I'm in my
+  Uber") — each name is its own "Hey Siri ___" trigger.
+- **If "Read to me" ever says no file:** the daily cloud job hasn't finished;
+  re-run it from the repo's Actions tab. Normal days it's automatic at 6am UTC.

@@ -1,0 +1,57 @@
+name: Seed Skip Pool (all topics)
+
+# Run this ONCE from the Actions tab to fill the skip pool with one story per
+# topic, so Skip has variety immediately. After this, the daily job maintains it.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install system audio tools
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('cloud/requirements.txt') }}
+
+      - name: Install Python deps
+        run: pip install -r cloud/requirements.txt
+
+      - name: Install & start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve &
+          sleep 8
+          ollama pull "${OLLAMA_MODEL}"
+        env:
+          OLLAMA_MODEL: llama3.2:1b
+
+      - name: Seed all topics
+        run: python generate_cloud.py
+        env:
+          OLLAMA_MODEL: llama3.2:1b
+          SEED_ALL: "1"
+
+      - name: Commit the audio
+        run: |
+          git config user.name "uber-anchor-bot"
+          git config user.email "uber-anchor-bot@users.noreply.github.com"
+          git add public
+          git commit -m "Seed skip pool with all topics" || echo "Nothing to commit"
+          git push
